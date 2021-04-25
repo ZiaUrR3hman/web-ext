@@ -338,6 +338,9 @@ export class ChromiumExtensionRunner {
         const msg = JSON.parse(evt.data);
         if (msg.type === 'webExtReloadAllExtensions') {
           const devExtensions = await getAllDevExtensions();
+          chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            chrome.tabs.reload(tabs[0].id);
+          });
           await Promise.all(devExtensions.map(ext => reloadExtension(ext.id)));
           ws.send(JSON.stringify({ type: 'webExtReloadExtensionComplete' }));
         }
